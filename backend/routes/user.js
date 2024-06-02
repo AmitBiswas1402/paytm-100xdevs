@@ -9,7 +9,7 @@ const signUpSchema = zod.object({
     password: zod.string(),
 })
 
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
     const body = req.body;
     const {success} = signUpSchema.safeParse(req.body);
     if (!success) {
@@ -19,8 +19,18 @@ router.post("/signup", (req, res) => {
     }
 
     const user = User.findOne({
-        
+        username: body.username
     })
+
+    if (user._id) {
+        return res.json({
+            message: "Email already taken / Incorrect inputs"
+        })
+    }
+
+    const dbUser = await User.create(body)
+    
+
 })
 
 module.exports = router
